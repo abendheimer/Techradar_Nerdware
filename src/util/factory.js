@@ -7,6 +7,7 @@ const _ = {
   each: require('lodash/each'),
 }
 
+const fetchJSON = require('./fetchJSON')
 const InputSanitizer = require('./inputSanitizer')
 const Radar = require('../models/radar')
 const Quadrant = require('../models/quadrant')
@@ -257,12 +258,15 @@ const JSONFile = function (url) {
   var self = {}
 
   self.build = function () {
-    d3.json(url)
-      .then(createBlips)
-      .catch((exception) => {
-        const fileNotFoundError = new FileNotFoundError(`Oops! We can't find the JSON file you've entered`)
-        plotErrorMessage(featureToggles.UIRefresh2022 ? fileNotFoundError : exception, 'json')
-      })
+    //d3.json(url)
+     // .then(createBlips)
+     // .catch((exception) => {
+     //   const fileNotFoundError = new FileNotFoundError(`Oops! We can't find the JSON file you've entered`)
+     //   plotErrorMessage(featureToggles.UIRefresh2022 ? fileNotFoundError : exception, 'json')
+     // })
+
+     fetchJSON(url)
+     .then(createBlips)
   }
 
   var createBlips = function (data) {
@@ -335,37 +339,40 @@ const Factory = function () {
       : window.location.href.match(/sheetId(.*)/)
     const queryParams = queryString ? QueryParams(queryString[0]) : {}
 
-    //const paramId = featureToggles.UIRefresh2022 ? queryParams.documentId : queryParams.sheetId
-    const paramId = 'https://raw.githubusercontent.com/abendheimer/Techradar_Nerdware/master/data/tech-radar.json'
-    if (paramId && paramId.endsWith('.csv')) {
-      sheet = CSVDocument(paramId)
-      sheet.init().build()
-    } else if (paramId && paramId.endsWith('.json')) {
-      sheet = JSONFile(paramId)
-      sheet.init().build()
-    } else if (domainName && domainName.endsWith('google.com') && paramId) {
-      sheet = GoogleSheet(paramId, queryParams.sheetName)
+    const paramId = 'https://raw.githubusercontent.com/nerdware-dev/techradar-nerdware/master/data/tech-radar.json?token=GHSAT0AAAAAACB2ZSVOVDCBXEI2IFLVDGVYZCHYAWA'
 
-      sheet.init().build()
-    } else {
-      if (!featureToggles.UIRefresh2022) {
-        document.body.style.opacity = '1'
-        document.body.innerHTML = ''
-        const content = d3.select('body').append('div').attr('class', 'input-sheet')
-        plotLogo(content)
-        const bannerText =
-          '<div><h1>Build your own radar</h1><p>Once you\'ve <a href ="https://www.thoughtworks.com/radar/byor">created your Radar</a>, you can use this service' +
-          ' to generate an <br />interactive version of your Technology Radar. Not sure how? <a href ="https://www.thoughtworks.com/radar/how-to-byor">Read this first.</a></p></div>'
+sheet = JSONFile(paramId)
+sheet.init().build()
 
-        plotBanner(content, bannerText)
+    // if (paramId && paramId.endsWith('.csv')) {
+    //   sheet = CSVDocument(paramId)
+    //   sheet.init().build()
+    // } else if (paramId && paramId.endsWith('L4A')) {
+    //   sheet = JSONFile(paramId)
+    //   sheet.init().build()
+    // } else if (domainName && domainName.endsWith('google.com') && paramId) {
+    //   sheet = GoogleSheet(paramId, queryParams.sheetName)
 
-        plotForm(content)
+    //   sheet.init().build()
+    // } else {
+    //   if (!featureToggles.UIRefresh2022) {
+    //     document.body.style.opacity = '1'
+    //     document.body.innerHTML = ''
+    //     const content = d3.select('body').append('div').attr('class', 'input-sheet')
+    //     plotLogo(content)
+    //     const bannerText =
+    //       '<div><h1>Build your own radar</h1><p>Once you\'ve <a href ="https://www.thoughtworks.com/radar/byor">created your Radar</a>, you can use this service' +
+    //       ' to generate an <br />interactive version of your Technology Radar. Not sure how? <a href ="https://www.thoughtworks.com/radar/how-to-byor">Read this first.</a></p></div>'
 
-        plotFooter(content)
-      }
+    //     plotBanner(content, bannerText)
 
-      setDocumentTitle()
-    }
+    //     plotForm(content)
+
+    //     plotFooter(content)
+    //   }
+
+    //   setDocumentTitle()
+    // }
   }
 
   return self
